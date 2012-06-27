@@ -1,0 +1,30 @@
+pix_depth2rgba
+======================================
+
+pure data / Gem external to convert the depthmap provided by Kinect camera via pix_freenect or pix_openni from raw format into a color gradient suitable for visual feedback.
+
+
+(C) 2012 by Matthias Kronlachner
+__________________________________________________________
+
+pix_openni and pix_freenect can (if set to raw mm mode) output the depth information in millimeter in the red and green color channel.
+
+this external allows you to convert the depthmap into a color gradient with adjustable maximum distance.
+
+all computation is done on cpu!
+consider using gpu shaders!
+
+_______________
+:::CHANGELOG:::
+
+
+ ________________
+:::KNOWN BUGS:::
+
+
+ ________________
+:::THINGS TO DO:::
+
+
+
+questions: m.kronlachner@gmail.com
