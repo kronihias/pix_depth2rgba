@@ -26,6 +26,23 @@ CPPEXTERN_NEW_WITH_ONE_ARG(pix_depth2rgba, t_floatarg, A_DEFFLOAT);
 #define XtoZ 1.111466646194458
 #define YtoZ 0.833599984645844
 
+// user colors
+float Colors[][3] =
+{
+	{1,1,1},
+	{0,1,1},
+	{0,0,1},
+	{0,1,0},
+	{1,1,0},
+	{1,0,0},
+	{1,.5,0},
+	{.5,1,0},
+	{0,.5,1},
+	{.5,0,1},
+	{1,1,.5}
+};
+int nColors = 10;
+
 /////////////////////////////////////////////////////////
 //
 // pix_depth2rgba
@@ -95,46 +112,61 @@ void pix_depth2rgba :: processRGBAImage(imageStruct &image)
 
 				base[chAlpha] = 255; // default alpha value
 
-				if (value ==  0) base[chAlpha] = 0; // alpha null for anything without depth value
-
-				switch (pval>>8) {
-					case 0:																					
-					base[chRed] = 255;
-					base[chGreen] = 255-lb;
-					base[chBlue] = 255-lb;
-					break;
-					case 1:
-					base[chRed] = 255;
-					base[chGreen] = lb;
-					base[chBlue] = 0;
-					break;
-					case 2:
-					base[chRed] = 255-lb;
-					base[chGreen] = 255;
-					base[chBlue] = 0;
-					break;
-					case 3:
-					base[chRed] = 0;
-					base[chGreen] = 255;
-					base[chBlue] = lb;
-					break;
-					case 4:
-					base[chRed] = 0;
-					base[chGreen] = 255-lb;
-					base[chBlue] = 255;
-					break;
-					case 5:
-					base[chRed] = 0;
-					base[chGreen] = 0;
-					base[chBlue] = 255-lb;
-					break;
-					default:
+				if (value <=  10) 
+				{
 					base[chRed] = 0;
 					base[chGreen] = 0;
 					base[chBlue] = 0;
-					base[chAlpha] = 0;
-					break;
+					base[chAlpha] = 0; // alpha null for anything without depth value
 				}
+				
+				int nColorID = base[chBlue]; // get user id from blue channel
+				
+				if (nColorID > 0) // if user id present display color
+				{
+					base[chRed] = Colors[nColorID][0];
+					base[chGreen] = Colors[nColorID][1];
+					base[chBlue] = Colors[nColorID][2];
+				} else {
+					switch (pval>>8) {
+						case 0:																					
+						base[chRed] = 255;
+						base[chGreen] = (255-lb);
+						base[chBlue] = (255-lb);
+						break;
+						case 1:
+						base[chRed] = 255;
+						base[chGreen] = lb;
+						base[chBlue] = 0;
+						break;
+						case 2:
+						base[chRed] = (255-lb);
+						base[chGreen] = 255;
+						base[chBlue] = 0;
+						break;
+						case 3:
+						base[chRed] = 0;
+						base[chGreen] = 255;
+						base[chBlue] = lb;
+						break;
+						case 4:
+						base[chRed] = 0;
+						base[chGreen] = (255-lb);
+						base[chBlue] = 255;
+						break;
+						case 5:
+						base[chRed] = 0;
+						base[chGreen] = 0;
+						base[chBlue] = (255-lb);
+						break;
+						default:
+						base[chRed] = 0;
+						base[chGreen] = 0;
+						base[chBlue] = 0;
+						base[chAlpha] = 0;
+						break;
+					}
+			}
 		base += 4;
     }
 	}
