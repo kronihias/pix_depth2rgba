@@ -18,6 +18,10 @@ WARRANTIES, see the file, "GEM.LICENSE.TERMS" in this distribution.
 
 #include "Base/GemPixObj.h"
 
+#ifdef _WIN32
+#include "stdint.h"
+#endif
+
 /*-----------------------------------------------------------------
 -------------------------------------------------------------------
 CLASS
@@ -37,7 +41,11 @@ DESCRIPTION
     "ft1" - Set all thresholds to one value
    
 -----------------------------------------------------------------*/
+#ifdef _WIN32
+class GEM_EXPORT pix_depth2rgba : public GemPixObj
+#else
 class GEM_EXTERN pix_depth2rgba : public GemPixObj
+#endif
 {
     CPPEXTERN_HEADER(pix_depth2rgba, GemPixObj);
 
