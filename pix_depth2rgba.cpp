@@ -29,17 +29,17 @@ CPPEXTERN_NEW_WITH_ONE_ARG(pix_depth2rgba, t_floatarg, A_DEFFLOAT);
 // user colors
 float Colors[][3] =
 {
-	{1,1,1},
-	{0,1,1},
-	{0,0,1},
-	{0,1,0},
-	{1,1,0},
-	{1,0,0},
-	{1,.5,0},
-	{.5,1,0},
-	{0,.5,1},
-	{.5,0,1},
-	{1,1,.5}
+	{255,255,255},
+	{0,255,255},
+	{0,0,255},
+	{0,255,0},
+	{255,255,0},
+	{255,0,0},
+	{255,127,0},
+	{127,255,0},
+	{0,127,255},
+	{127,0,255},
+	{255,255,127}
 };
 int nColors = 10;
 
@@ -127,6 +127,7 @@ void pix_depth2rgba :: processRGBAImage(imageStruct &image)
 					base[chRed] = Colors[nColorID][0];
 					base[chGreen] = Colors[nColorID][1];
 					base[chBlue] = Colors[nColorID][2];
+                    base[chAlpha] = 255;
 				} else {
 					switch (pval>>8) {
 						case 0:																					
