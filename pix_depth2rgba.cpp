@@ -21,7 +21,7 @@
 
 
 //CPPEXTERN_NEW(pix_depth2rgba);
-CPPEXTERN_NEW_WITH_ONE_ARG(pix_depth2rgba, t_floatarg, A_DEFFLOAT);
+CPPEXTERN_NEW_WITH_TWO_ARGS(pix_depth2rgba, t_floatarg, A_DEFFLOAT, t_floatarg, A_DEFFLOAT);
 
 #define XtoZ 1.111466646194458
 #define YtoZ 0.833599984645844
@@ -51,29 +51,37 @@ int nColors = 10;
 // Constructor
 //
 /////////////////////////////////////////////////////////
-pix_depth2rgba :: pix_depth2rgba(t_floatarg distance)
+pix_depth2rgba :: pix_depth2rgba(t_floatarg hi_thresh, t_floatarg lo_thresh)
 {
     inlet_new(this->x_obj, &this->x_obj->ob_pd, gensym("float"), gensym("mode"));
-    // inlet_new(this->x_obj, &this->x_obj->ob_pd, gensym("float"), gensym("lo_thresh"));
     inlet_new(this->x_obj, &this->x_obj->ob_pd, gensym("float"), gensym("hi_thresh"));
-		if (distance > 0)
-		{
-			m_hi_thresh = distance;
-		} else {
-			m_hi_thresh = 8000.0;
-		}
-    m_lo_thresh = 10.1;
-    m_active = true;
-		m_mode = true;
-		t_mult = 1530.0 / m_hi_thresh ;
+    inlet_new(this->x_obj, &this->x_obj->ob_pd, gensym("float"), gensym("lo_thresh"));
 		
-		//depth map representation curve
-		int i;
-	  for (i=0; i<10000; i++) {
+    if (hi_thresh > 0)
+	{
+		m_hi_thresh = hi_thresh;
+	} else {
+		m_hi_thresh = 8000.0;
+	}
+    
+    if (lo_thresh > 0)
+    {
+        m_lo_thresh = lo_thresh;
+    } else {
+        m_lo_thresh = 10.1;
+    }
+    
+    m_active = true;
+	m_mode = true;
+	t_mult = 1530.0 / m_hi_thresh ;
+		
+	//depth map representation curve
+	int i;
+	for (i=0; i<10000; i++) {
 	  	float v = i/2048.0;
 	  	v = powf(v, 3)* 6;
 	  	t_gamma[i] = v*6*256;
-	  }
+	}
 }
 
 /////////////////////////////////////////////////////////
@@ -120,7 +128,7 @@ void pix_depth2rgba :: processRGBAImage(imageStruct &image)
 						//pval = t_gamma[value/4];
 						// t_mult = 1530.0 / m_hi_thresh; // do it when changed
 						//pval = value / 6; // linear mapping
-						pval = (int)((float)value * t_mult); // linear mapping
+						pval = (int)(((float)value-m_lo_thresh) * t_mult); // linear mapping
 						
 					} else {
 						pval = t_gamma[value];
@@ -203,9 +211,9 @@ void pix_depth2rgba :: floatHiThreshMess(float arg)
     if (arg > 0.0)
     {
 			m_hi_thresh = arg;
-			verbose (1, "high threshold set to %f", m_hi_thresh);
-			t_mult = 1530.0 / m_hi_thresh; //recalc mult.
-			//~ t_mult = 1530.0 / (m_hi_thresh - m_lo_thresh);
+			// verbose (1, "high threshold set to %f", m_hi_thresh);
+			//t_mult = 1530.0 / m_hi_thresh; //recalc mult.
+			t_mult = 1530.0 / (m_hi_thresh - m_lo_thresh);
 
 		}
 }
@@ -220,7 +228,8 @@ void pix_depth2rgba :: floatLoThreshMess(float arg)
     {
 			m_lo_thresh = arg;
 			post ("low threshold set to %f", m_lo_thresh);
-			verbose (1, "low threshold set to %f", m_lo_thresh);
+			// verbose (1, "low threshold set to %f", m_lo_thresh);
+            t_mult = 1530.0 / (m_hi_thresh - m_lo_thresh);
 		}
 }
 

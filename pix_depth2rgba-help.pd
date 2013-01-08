@@ -1,53 +1,62 @@
-#N canvas 664 98 586 399 10;
-#X text 16 20 for use with pix_freenect or pix_openni;
-#X obj 288 105 gemwin;
-#X obj 173 152 tgl 15 0 empty empty mode 17 7 0 10 -262144 -1 -1 0
+#N canvas 566 97 616 397 10;
+#X text 17 20 for use with pix_freenect or pix_openni;
+#X obj 289 105 gemwin;
+#X obj 174 152 tgl 15 0 empty empty mode 17 7 0 10 -262144 -1 -1 0
 1;
-#X obj 83 267 pix_texture;
-#X obj 83 305 alpha;
-#X msg 243 59 destroy;
-#X obj 9 191 tgl 15 0 empty empty on/off 17 7 0 10 -262144 -1 -1 0
+#X obj 84 267 pix_texture;
+#X obj 84 305 alpha;
+#X msg 244 59 destroy;
+#X obj 10 191 tgl 15 0 empty empty on/off 17 7 0 10 -262144 -1 -1 1
 1;
-#X msg 288 35 dimen 640 480 \, create \, 1;
-#X obj 83 348 rectangle 4 3;
-#X text 10 5 convert raw depth values into human viewable colorspace
+#X msg 289 35 dimen 640 480 \, create \, 1;
+#X obj 84 348 rectangle 4 3;
+#X text 11 5 convert raw depth values into human viewable colorspace
 ;
-#X text 220 144 0 -> 11 bit raw kinect data;
-#X text 220 158 1 (default) -> 16 bit mm depth data;
-#X obj 307 78 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+#X obj 308 78 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
-#X obj 194 203 nbx 5 14 -1e+37 1e+37 0 0 empty empty max-distance-in-mm
-0 -8 0 10 -262144 -1 -1 0 256;
-#X obj 83 226 pix_depth2rgba 5000;
-#X text 220 230 arg: max distance to display in color;
-#X text 231 250 use it to scale color gradient;
-#X text 297 371 (C)2012 Matthias Kronlachner;
-#X text 232 266 in mm!;
-#X obj 136 83 gemhead;
-#X obj 31 118 pix_freenect 0 0 1;
-#N canvas 1 92 588 300 threshold 0;
-#X obj 153 212 outlet;
-#X msg 115 98 lo_thresh \$1;
-#X msg 153 144 hi_thresh \$1;
-#X floatatom 115 81 5 0 0 0 - - -;
-#X floatatom 153 127 5 0 0 0 - - -;
-#X text 157 80 low threshold default to 10.1;
-#X text 193 124 same as third inlet \, set by arg \, default 8000;
-#X text 291 209 pixel which are out of bounds are zeroes;
+#X obj 174 203 nbx 5 14 -1e+37 1e+37 0 0 empty empty hi_thresh 0 -8
+0 10 -262144 -1 -1 5000 256;
+#X text 272 272 use it to scale color gradient;
+#X text 298 371 (C)2012 Matthias Kronlachner;
+#X text 271 285 in mm!;
+#X obj 137 83 gemhead;
+#X obj 32 118 pix_freenect 0 0 1;
+#X obj 84 226 pix_depth2rgba 5000 100;
+#X obj 238 201 nbx 5 14 -1e+37 1e+37 0 0 empty empty lo_thresh 0 -8
+0 10 -262144 -1 -1 100 256;
+#X text 295 198 thresholds for normalizing and filtering;
+#X text 296 218 1st arg: hi_thresh (max distance);
+#X text 296 232 2nd arg: lo_thresh (min distance);
+#X text 221 144 0 -> 11 bit raw kinect data;
+#X text 221 158 1 (default) -> 16 bit mm depth data;
+#X text 390 144 (just for raw pix_freenect output);
+#N canvas 570 414 569 230 thresholds 0;
+#X obj 69 177 outlet;
+#X msg 31 63 lo_thresh \$1;
+#X msg 69 109 hi_thresh \$1;
+#X floatatom 31 46 5 0 0 0 - - -;
+#X floatatom 69 92 5 0 0 0 - - -;
+#X text 72 17 low threshold default to 10.1;
+#X text 109 89 same as third inlet \, set by arg \, default 8000;
+#X text 162 186 pixel which are out of bounds are zeroes;
+#X text 163 149 this normalizes the color gradient from lo_thresh to
+hi_thresh;
+#X text 89 33 same as fourth inlet \, set by second creation arg;
 #X connect 1 0 0 0;
 #X connect 2 0 0 0;
 #X connect 3 0 1 0;
 #X connect 4 0 2 0;
-#X restore 35 148 pd threshold;
-#X connect 2 0 14 1;
+#X restore 51 158 pd thresholds;
+#X connect 2 0 17 1;
 #X connect 3 0 4 0;
 #X connect 4 0 8 0;
 #X connect 5 0 1 0;
-#X connect 6 0 14 0;
+#X connect 6 0 17 0;
 #X connect 7 0 1 0;
-#X connect 12 0 1 0;
-#X connect 13 0 14 2;
-#X connect 14 0 3 0;
-#X connect 19 0 20 1;
-#X connect 20 1 14 0;
-#X connect 21 0 14 0;
+#X connect 10 0 1 0;
+#X connect 11 0 17 2;
+#X connect 15 0 16 1;
+#X connect 16 1 17 0;
+#X connect 17 0 3 0;
+#X connect 18 0 17 3;
+#X connect 25 0 17 0;

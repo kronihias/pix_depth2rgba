@@ -53,7 +53,7 @@ class GEM_EXTERN pix_depth2rgba : public GemPixObj
 
         //////////
         // Constructor
-			pix_depth2rgba(t_floatarg distance);
+			pix_depth2rgba(t_floatarg hi_thresh, t_floatarg lo_thresh);
     	
     protected:
     	
