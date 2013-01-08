@@ -65,7 +65,7 @@ pix_depth2rgba :: pix_depth2rgba(t_floatarg distance)
     m_lo_thresh = 10.1;
     m_active = true;
 		m_mode = true;
-		t_mult = 1530.0 / m_hi_thresh;
+		t_mult = 1530.0 / m_hi_thresh ;
 		
 		//depth map representation curve
 		int i;
@@ -98,75 +98,86 @@ void pix_depth2rgba :: processRGBAImage(imageStruct &image)
     while(datasize--)
     {
 				value = ((int)base[chRed] << 8) + (int)base[chGreen];
-				int pval;
-				if (m_mode)
-				{
-					//pval = t_gamma[value/4];
-					// t_mult = 1530.0 / m_hi_thresh; // do it when changed
-					//pval = value / 6; // linear mapping
-					pval = (int)((float)value * t_mult); // linear mapping
-				} else {
-					pval = t_gamma[value];
-				}						
-				int lb = pval & 0xff;
-
-				base[chAlpha] = 255; // default alpha value
-
-				if (value <=  10) 
+				
+				// first check if value is in range
+				if (value <=  m_lo_thresh) 
 				{
 					base[chRed] = 0;
 					base[chGreen] = 0;
 					base[chBlue] = 0;
 					base[chAlpha] = 0; // alpha null for anything without depth value
-				}
-				
-				int nColorID = base[chBlue]; // get user id from blue channel
-				
-				if (nColorID > 0) // if user id present display color
+				} else if (value >  m_hi_thresh) 
 				{
-					base[chRed] = Colors[nColorID][0];
-					base[chGreen] = Colors[nColorID][1];
-					base[chBlue] = Colors[nColorID][2];
-                    base[chAlpha] = 255;
-				} else {
-					switch (pval>>8) {
-						case 0:																					
-						base[chRed] = 255;
-						base[chGreen] = (255-lb);
-						base[chBlue] = (255-lb);
-						break;
-						case 1:
-						base[chRed] = 255;
-						base[chGreen] = lb;
-						base[chBlue] = 0;
-						break;
-						case 2:
-						base[chRed] = (255-lb);
-						base[chGreen] = 255;
-						base[chBlue] = 0;
-						break;
-						case 3:
-						base[chRed] = 0;
-						base[chGreen] = 255;
-						base[chBlue] = lb;
-						break;
-						case 4:
-						base[chRed] = 0;
-						base[chGreen] = (255-lb);
-						base[chBlue] = 255;
-						break;
-						case 5:
-						base[chRed] = 0;
-						base[chGreen] = 0;
-						base[chBlue] = (255-lb);
-						break;
-						default:
-						base[chRed] = 0;
-						base[chGreen] = 0;
-						base[chBlue] = 0;
-						base[chAlpha] = 0;
-						break;
-					}
+					base[chRed] = 0;
+					base[chGreen] = 0;
+					base[chBlue] = 0;
+					base[chAlpha] = 0; // alpha null for anything without depth value
+				} else { // don't need to map out-of-bounds value...
+					
+					int pval;
+					if (m_mode)
+					{
+						//pval = t_gamma[value/4];
+						// t_mult = 1530.0 / m_hi_thresh; // do it when changed
+						//pval = value / 6; // linear mapping
+						pval = (int)((float)value * t_mult); // linear mapping
+						
+					} else {
+						pval = t_gamma[value];
+					}						
+					int lb = pval & 0xff;
+
+					base[chAlpha] = 255; // default alpha value
+					
+			
+					int nColorID = base[chBlue]; // get user id from blue channel
+					
+					if (nColorID > 0) // if user id present display color
+					{
+						base[chRed] = Colors[nColorID][0];
+						base[chGreen] = Colors[nColorID][1];
+						base[chBlue] = Colors[nColorID][2];
+						base[chAlpha] = 255;
+					} else {
+						switch (pval>>8) {
+							case 0:																					
+							base[chRed] = 255;
+							base[chGreen] = (255-lb);
+							base[chBlue] = (255-lb);
+							break;
+							case 1:
+							base[chRed] = 255;
+							base[chGreen] = lb;
+							base[chBlue] = 0;
+							break;
+							case 2:
+							base[chRed] = (255-lb);
+							base[chGreen] = 255;
+							base[chBlue] = 0;
+							break;
+							case 3:
+							base[chRed] = 0;
+							base[chGreen] = 255;
+							base[chBlue] = lb;
+							break;
+							case 4:
+							base[chRed] = 0;
+							base[chGreen] = (255-lb);
+							base[chBlue] = 255;
+							break;
+							case 5:
+							base[chRed] = 0;
+							base[chGreen] = 0;
+							base[chBlue] = (255-lb);
+							break;
+							default:
+							base[chRed] = 0;
+							base[chGreen] = 0;
+							base[chBlue] = 0;
+							base[chAlpha] = 0;
+							break;
+						}
+				}
 			}
 		base += 4;
     }
@@ -194,6 +205,8 @@ void pix_depth2rgba :: floatHiThreshMess(float arg)
 			m_hi_thresh = arg;
 			verbose (1, "high threshold set to %f", m_hi_thresh);
 			t_mult = 1530.0 / m_hi_thresh; //recalc mult.
+			//~ t_mult = 1530.0 / (m_hi_thresh - m_lo_thresh);
+
 		}
 }
 
@@ -206,6 +219,7 @@ void pix_depth2rgba :: floatLoThreshMess(float arg)
     if (arg >= 0)
     {
 			m_lo_thresh = arg;
+			post ("low threshold set to %f", m_lo_thresh);
 			verbose (1, "low threshold set to %f", m_lo_thresh);
 		}
 }
