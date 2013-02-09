@@ -135,7 +135,7 @@ void pix_depth2rgba :: processRGBAImage(imageStruct &image)
 					}						
 					int lb = pval & 0xff;
 
-					base[chAlpha] = 255; // default alpha value
+					//base[chAlpha] = 255; // default alpha value
 					
 			
 					int nColorID = base[chBlue]; // get user id from blue channel
@@ -145,7 +145,7 @@ void pix_depth2rgba :: processRGBAImage(imageStruct &image)
 						base[chRed] = Colors[nColorID][0];
 						base[chGreen] = Colors[nColorID][1];
 						base[chBlue] = Colors[nColorID][2];
-						base[chAlpha] = 255;
+						//base[chAlpha] = 255; // don't overwrite alpha!
 					} else {
 						switch (pval>>8) {
 							case 0:																					
@@ -182,7 +182,7 @@ void pix_depth2rgba :: processRGBAImage(imageStruct &image)
 							base[chRed] = 0;
 							base[chGreen] = 0;
 							base[chBlue] = 0;
-							base[chAlpha] = 0;
+							// base[chAlpha] = 0; // don't overwrite alpha!
 							break;
 						}
 				}
